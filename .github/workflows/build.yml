@@ -35,6 +35,10 @@ jobs:
           gpg --verify ${nginx}.asc
           tar -xzf ${nginx}
 
+      - name: Install dependencies
+        run: |
+          sudo apt install pkg-config guile-3.0-dev guile-3.0-lib
+
       - name: Compile
         working-directory: "nginx-${{ matrix.nginx_version }}"
         run: |
