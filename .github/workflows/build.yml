@@ -28,7 +28,9 @@ jobs:
 
       - name: Download NGINX sources
         run: |
-          nginx="nginx-${{ matrix.nginx_version}}.tar.gz"
+          apt update
+          apt install debian-archive-keyring
+          nginx="nginx-${{ matrix.nginx_version }}.tar.gz"
           wget https://nginx.org/download/${nginx}.asc
           wget https://nginx.org/download/${nginx}
           gpg --recv-keys 13C82A63B603576156E30A4EA0EA981B66B0D967
