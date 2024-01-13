@@ -37,8 +37,6 @@ jobs:
 
       - name: Compile
         working-directory: "nginx-${{ matrix.nginx_version }}"
-        env:
-          GUILE_MODULE_PATH: ${{ env.GITHUB_WORKSPACE }}
         run: |
-          ./configure --add-module=$GUILE_MODULE_PATH
+          ./configure --add-module=..
           make
