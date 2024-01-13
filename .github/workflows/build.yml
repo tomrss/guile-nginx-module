@@ -23,16 +23,16 @@ jobs:
 
     steps:
 
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Download NGINX sources
         env:
           NGINX_ARCHIVE: "nginx-${{ matrix.nginx_version}}.tar.gz"
         run: |
           wget https://nginx.org/download/$NGINX_ARCHIVE
           tar -xzf $NGINX_ARCHIVE
-          
-      - name: Checkout
-        uses: actions/checkout@v4
-    
+
       - name: Compile
         working-directory: "nginx-${{ matrix.nginx_version }}"
         env:
