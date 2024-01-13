@@ -27,11 +27,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download NGINX sources
-        env:
-          NGINX_ARCHIVE: "nginx-${{ matrix.nginx_version}}.tar.gz"
         run: |
-          wget https://nginx.org/download/$NGINX_ARCHIVE
-          tar -xzf $NGINX_ARCHIVE
+          nginx="nginx-${{ matrix.nginx_version}}.tar.gz"
+          wget https://nginx.org/download/${nginx}.asc
+          wget https://nginx.org/download/${nginx}
+          gpg --recv-keys 13C82A63B603576156E30A4EA0EA981B66B0D967
+          gpg --verify ${nginx}.asc
+          tar -xzf ${nginx}
 
       - name: Compile
         working-directory: "nginx-${{ matrix.nginx_version }}"
