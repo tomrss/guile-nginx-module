@@ -26,9 +26,6 @@
 #include <libguile.h>
 #include <time.h>
 
-// TODO dangerous global, move it in config scope
-static SCM parse_req_function;
-
 typedef struct
 {
   ngx_http_complex_value_t *init_script;
@@ -84,13 +81,16 @@ ngx_module_t ngx_http_guile_module
 static void *
 ngx_http_guile_handle_request (void *data)
 {
-  ngx_http_request_t *http_request = (ngx_http_request_t *)data;
+  ngx_http_request_t *http_request = data;
+  SCM http_request_scm, parse_request_fun;
 
   // TODO unique request name
-  SCM http_request_scm
-      = ngx_http_guile_request_c_make ("my-req", http_request);
+  http_request_scm = ngx_http_guile_request_c_make ("my-req", http_request);
 
-  scm_call_1 (scm_variable_ref (parse_req_function), http_request_scm);
+  parse_request_fun = scm_module_lookup (scm_current_module (),
+                                         scm_from_utf8_symbol ("ngx-handle-request"));
+
+  scm_call_1 (scm_variable_ref (parse_request_fun), http_request_scm);
 
   return NULL;
 }
@@ -157,10 +157,6 @@ ngx_http_guile_init_scm (void *data)
   // load the script
   scm_primitive_load (scm_from_locale_stringn ((char *)script_filename->data,
                                                script_filename->len));
-
-  // cache script variables
-  SCM handler_proc = scm_from_utf8_symbol ("ngx-handle-request");
-  parse_req_function = scm_module_lookup (scm_current_module (), handler_proc);
 
   return NULL;
 }
