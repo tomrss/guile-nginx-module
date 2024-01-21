@@ -16,7 +16,7 @@ Don't use it in any case except for contributing or for experimenting.
 ## Installation
 
 Requirements:
-- nginx sources
+- nginx 1.24+
 - libguile 3.0
 
 For using this module in nginx, you must compile nginx with a reference to this

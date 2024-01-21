@@ -17,7 +17,6 @@ jobs:
       fail-fast: false
       matrix:
         nginx_version:
-          - 1.22.1
           - 1.24.0
           - 1.25.3
 
