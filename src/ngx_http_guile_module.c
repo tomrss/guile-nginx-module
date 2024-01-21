@@ -87,8 +87,8 @@ ngx_http_guile_handle_request (void *data)
   // TODO unique request name
   http_request_scm = ngx_http_guile_request_c_make ("my-req", http_request);
 
-  parse_request_fun = scm_module_lookup (scm_current_module (),
-                                         scm_from_utf8_symbol ("ngx-handle-request"));
+  parse_request_fun = scm_module_lookup (
+      scm_current_module (), scm_from_utf8_symbol ("ngx-handle-request"));
 
   scm_call_1 (scm_variable_ref (parse_request_fun), http_request_scm);
 
@@ -154,6 +154,91 @@ ngx_http_guile_init_scm (void *data)
   scm_c_define_gsubr ("ngx-request-unparsed-uri", 1, 0, 0,
                       ngx_http_guile_request_unparsed_uri);
 
+  scm_c_define_gsubr ("ngx-request-header-in", 2, 0, 0,
+                      ngx_http_guile_request_header_in);
+
+  scm_c_define_gsubr ("ngx-request-header-host", 1, 0, 0,
+                      ngx_http_guile_request_header_host);
+  scm_c_define_gsubr ("ngx-request-header-connection", 1, 0, 0,
+                      ngx_http_guile_request_header_connection);
+  scm_c_define_gsubr ("ngx-request-header-if-modified-since", 1, 0, 0,
+                      ngx_http_guile_request_header_if_modified_since);
+  scm_c_define_gsubr ("ngx-request-header-if-unmodified-since", 1, 0, 0,
+                      ngx_http_guile_request_header_if_unmodified_since);
+  scm_c_define_gsubr ("ngx-request-header-if-match", 1, 0, 0,
+                      ngx_http_guile_request_header_if_match);
+  scm_c_define_gsubr ("ngx-request-header-if-none-match", 1, 0, 0,
+                      ngx_http_guile_request_header_if_none_match);
+  scm_c_define_gsubr ("ngx-request-header-user-agent", 1, 0, 0,
+                      ngx_http_guile_request_header_user_agent);
+  scm_c_define_gsubr ("ngx-request-header-referer", 1, 0, 0,
+                      ngx_http_guile_request_header_referer);
+  scm_c_define_gsubr ("ngx-request-header-content-length", 1, 0, 0,
+                      ngx_http_guile_request_header_content_length);
+  scm_c_define_gsubr ("ngx-request-header-content-range", 1, 0, 0,
+                      ngx_http_guile_request_header_content_range);
+  scm_c_define_gsubr ("ngx-request-header-content-type", 1, 0, 0,
+                      ngx_http_guile_request_header_content_type);
+  scm_c_define_gsubr ("ngx-request-header-range", 1, 0, 0,
+                      ngx_http_guile_request_header_range);
+  scm_c_define_gsubr ("ngx-request-header-if-range", 1, 0, 0,
+                      ngx_http_guile_request_header_if_range);
+  scm_c_define_gsubr ("ngx-request-header-transfer-encoding", 1, 0, 0,
+                      ngx_http_guile_request_header_transfer_encoding);
+  scm_c_define_gsubr ("ngx-request-header-te", 1, 0, 0,
+                      ngx_http_guile_request_header_te);
+  scm_c_define_gsubr ("ngx-request-header-expect", 1, 0, 0,
+                      ngx_http_guile_request_header_expect);
+  scm_c_define_gsubr ("ngx-request-header-upgrade", 1, 0, 0,
+                      ngx_http_guile_request_header_upgrade);
+
+#if (NGX_HTTP_GZIP || NGX_HTTP_HEADERS)
+  scm_c_define_gsubr ("ngx-request-header-accept-encoding", 1, 0, 0,
+                      ngx_http_guile_request_header_accept_encoding);
+  scm_c_define_gsubr ("ngx-request-header-via", 1, 0, 0,
+                      ngx_http_guile_request_header_via);
+#endif
+
+  scm_c_define_gsubr ("ngx-request-header-authorization", 1, 0, 0,
+                      ngx_http_guile_request_header_authorization);
+  scm_c_define_gsubr ("ngx-request-header-keep-alive", 1, 0, 0,
+                      ngx_http_guile_request_header_keep_alive);
+
+#if (NGX_HTTP_X_FORWARDED_FOR)
+  scm_c_define_gsubr ("ngx-request-header-x-forwarded-for", 1, 0, 0,
+                      ngx_http_guile_request_header_x_forwarded_for);
+#endif
+
+#if (NGX_HTTP_REALIP)
+  scm_c_define_gsubr ("ngx-request-header-x-real-ip", 1, 0, 0,
+                      ngx_http_guile_request_header_x_real_ip);
+#endif
+
+#if (NGX_HTTP_HEADERS)
+  scm_c_define_gsubr ("ngx-request-header-accept", 1, 0, 0,
+                      ngx_http_guile_request_header_accept);
+  scm_c_define_gsubr ("ngx-request-header-accept-language", 1, 0, 0,
+                      ngx_http_guile_request_header_accept_language);
+#endif
+
+#if (NGX_HTTP_DAV)
+  scm_c_define_gsubr ("ngx-request-header-depth", 1, 0, 0,
+                      ngx_http_guile_request_header_depth);
+  scm_c_define_gsubr ("ngx-request-header-destination", 1, 0, 0,
+                      ngx_http_guile_request_header_destination);
+  scm_c_define_gsubr ("ngx-request-header-overwrite", 1, 0, 0,
+                      ngx_http_guile_request_header_overwrite);
+  scm_c_define_gsubr ("ngx-request-header-date", 1, 0, 0,
+                      ngx_http_guile_request_header_date);
+#endif
+
+  scm_c_define_gsubr ("ngx-request-header-cookie", 1, 0, 0,
+                      ngx_http_guile_request_header_cookie);
+
+  scm_c_define_gsubr ("ngx-request-user", 1, 0, 0,
+                      ngx_http_guile_request_user);
+  scm_c_define_gsubr ("ngx-request-passwd", 1, 0, 0,
+                      ngx_http_guile_request_passwd);
   // load the script
   scm_primitive_load (scm_from_locale_stringn ((char *)script_filename->data,
                                                script_filename->len));

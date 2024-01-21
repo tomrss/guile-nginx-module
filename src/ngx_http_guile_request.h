@@ -53,4 +53,57 @@ SCM ngx_http_guile_request_args (SCM http_request);
 SCM ngx_http_guile_request_exten (SCM http_request);
 SCM ngx_http_guile_request_unparsed_uri (SCM http_request);
 
+SCM ngx_http_guile_request_header_in (SCM http_request, SCM header_name);
+
+SCM ngx_http_guile_request_header_host (SCM http_request);
+SCM ngx_http_guile_request_header_connection (SCM http_request);
+SCM ngx_http_guile_request_header_if_modified_since (SCM http_request);
+SCM ngx_http_guile_request_header_if_unmodified_since (SCM http_request);
+SCM ngx_http_guile_request_header_if_match (SCM http_request);
+SCM ngx_http_guile_request_header_if_none_match (SCM http_request);
+SCM ngx_http_guile_request_header_user_agent (SCM http_request);
+SCM ngx_http_guile_request_header_referer (SCM http_request);
+SCM ngx_http_guile_request_header_content_length (SCM http_request);
+SCM ngx_http_guile_request_header_content_range (SCM http_request);
+SCM ngx_http_guile_request_header_content_type (SCM http_request);
+SCM ngx_http_guile_request_header_range (SCM http_request);
+SCM ngx_http_guile_request_header_if_range (SCM http_request);
+SCM ngx_http_guile_request_header_transfer_encoding (SCM http_request);
+SCM ngx_http_guile_request_header_te (SCM http_request);
+SCM ngx_http_guile_request_header_expect (SCM http_request);
+SCM ngx_http_guile_request_header_upgrade (SCM http_request);
+
+#if (NGX_HTTP_GZIP || NGX_HTTP_HEADERS)
+SCM ngx_http_guile_request_header_accept_encoding (SCM http_request);
+SCM ngx_http_guile_request_header_via (SCM http_request);
 #endif
+
+SCM ngx_http_guile_request_header_authorization (SCM http_request);
+SCM ngx_http_guile_request_header_keep_alive (SCM http_request);
+
+#if (NGX_HTTP_X_FORWARDED_FOR)
+SCM ngx_http_guile_request_header_x_forwarded_for (SCM http_request);
+#endif
+
+#if (NGX_HTTP_REALIP)
+SCM ngx_http_guile_request_header_x_real_ip (SCM http_request);
+#endif
+
+#if (NGX_HTTP_HEADERS)
+SCM ngx_http_guile_request_header_accept (SCM http_request);
+SCM ngx_http_guile_request_header_accept_language (SCM http_request);
+#endif
+
+#if (NGX_HTTP_DAV)
+SCM ngx_http_guile_request_header_depth (SCM http_request);
+SCM ngx_http_guile_request_header_destination (SCM http_request);
+SCM ngx_http_guile_request_header_overwrite (SCM http_request);
+SCM ngx_http_guile_request_header_date (SCM http_request);
+#endif
+
+SCM ngx_http_guile_request_header_cookie (SCM http_request);
+
+SCM ngx_http_guile_request_user (SCM http_request);
+SCM ngx_http_guile_request_passwd (SCM http_request);
+
+#endif /* _NGX_HTTP_GUILE_REQUEST_INCLUDED_ */
