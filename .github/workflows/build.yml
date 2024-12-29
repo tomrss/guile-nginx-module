@@ -28,7 +28,7 @@ jobs:
           nginx="nginx-${{ matrix.nginx_version }}.tar.gz"
           wget -q https://nginx.org/download/${nginx}.asc
           wget -q https://nginx.org/download/${nginx}
-          gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys 13C82A63B603576156E30A4EA0EA981B66B0D967
+          gpg --keyserver hkps://keyserver.ubuntu.com --recv-keys D6786CE303D9A9022998DC6CC8464D549AF75C0A
           gpg --verify ${nginx}.asc
           tar -xzf ${nginx}
 
