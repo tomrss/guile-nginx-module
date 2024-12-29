@@ -294,7 +294,7 @@ ngx_http_guile_init_script (ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
     return NGX_CONF_ERROR;
 
   // init guile
-  scm_with_guile (ngx_http_guile_init_scm, glcf->init_script);
+  scm_with_guile (ngx_http_guile_init_scm, ccv.value);
 
   return NGX_CONF_OK;
 }
