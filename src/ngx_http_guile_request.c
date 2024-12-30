@@ -55,8 +55,8 @@ ngx_http_guile_request_c_make (char *name, ngx_http_request_t *r)
 {
   ngx_http_guile_request_t *req_scm;
 
-  req_scm = (ngx_http_guile_request_t *)scm_gc_malloc (
-      sizeof (ngx_http_guile_request_t), "ngx-http-request");
+  req_scm
+      = scm_gc_malloc (sizeof (ngx_http_guile_request_t), "ngx-http-request");
 
   req_scm->name = scm_from_utf8_symbol (name);
   req_scm->http_request = r;
