@@ -26,6 +26,8 @@
 #include <libguile.h>
 #include <time.h>
 
+#define NGX_HTTP_GUILE_MODULE "ngx http base"
+
 typedef struct
 {
   ngx_http_complex_value_t *init_script;
@@ -38,6 +40,10 @@ static char *ngx_http_guile_merge_loc_conf (ngx_conf_t *cf, void *parent,
 static ngx_int_t ngx_http_guile_init (ngx_conf_t *cf);
 static char *ngx_http_guile_init_script (ngx_conf_t *cf, ngx_command_t *cmd,
                                          void *conf);
+static void *ngx_http_guile_init_scm (void *data);
+static void ngx_http_guile_init_module (void *data);
+static void *ngx_http_guile_handle_request (void *data);
+static SCM ngx_http_guile_handle_request_in_module (void *data);
 
 static ngx_command_t ngx_http_guile_commands[] = {
 
@@ -81,18 +87,27 @@ ngx_module_t ngx_http_guile_module
 static void *
 ngx_http_guile_handle_request (void *data)
 {
+  SCM module = scm_c_resolve_module (NGX_HTTP_GUILE_MODULE);
+  scm_c_call_with_current_module (
+      module, ngx_http_guile_handle_request_in_module, data);
+
+  return NULL;
+}
+
+static SCM
+ngx_http_guile_handle_request_in_module (void *data)
+{
   ngx_http_request_t *http_request = data;
-  SCM http_request_scm, parse_request_fun;
 
   // TODO unique request name
-  http_request_scm = ngx_http_guile_request_c_make ("my-req", http_request);
+  SCM http_request_scm
+      = ngx_http_guile_request_c_make ("my-req", http_request);
 
-  parse_request_fun = scm_module_lookup (
-      scm_current_module (), scm_from_utf8_symbol ("ngx-handle-request"));
+  SCM parse_request_fun = scm_c_lookup ("ngx-handle-request");
 
   scm_call_1 (scm_variable_ref (parse_request_fun), http_request_scm);
 
-  return NULL;
+  return http_request_scm;
 }
 
 static ngx_int_t
@@ -131,6 +146,17 @@ ngx_http_guile_merge_loc_conf (ngx_conf_t *cf, void *parent, void *child)
 static void *
 ngx_http_guile_init_scm (void *data)
 {
+  scm_c_define_module (NGX_HTTP_GUILE_MODULE, ngx_http_guile_init_module,
+                       data);
+  ngx_http_guile_init_module (data);
+
+  return NULL;
+}
+
+static void
+ngx_http_guile_init_module (void *data)
+{
+
   ngx_str_t *script_filename = (ngx_str_t *)data;
 
   // initialize data types
@@ -239,11 +265,44 @@ ngx_http_guile_init_scm (void *data)
                       ngx_http_guile_request_user);
   scm_c_define_gsubr ("ngx-request-passwd", 1, 0, 0,
                       ngx_http_guile_request_passwd);
+
+  // export functions in current module
+  scm_c_export (
+      "ngx-request-http-version", "ngx-request-http-protocol",
+      "ngx-request-request-line", "ngx-request-method", "ngx-request-uri",
+      "ngx-request-args", "ngx-request-exten", "ngx-request-unparsed-uri",
+      "ngx-request-header-in", "ngx-request-header-host",
+      "ngx-request-header-connection", "ngx-request-header-if-modified-since",
+      "ngx-request-header-if-unmodified-since", "ngx-request-header-if-match",
+      "ngx-request-header-if-none-match", "ngx-request-header-user-agent",
+      "ngx-request-header-referer", "ngx-request-header-content-length",
+      "ngx-request-header-content-range", "ngx-request-header-content-type",
+      "ngx-request-header-range", "ngx-request-header-if-range",
+      "ngx-request-header-transfer-encoding", "ngx-request-header-te",
+      "ngx-request-header-expect", "ngx-request-header-upgrade",
+#if (NGX_HTTP_GZIP || NGX_HTTP_HEADERS)
+      "ngx-request-header-accept-encoding", "ngx-request-header-via",
+#endif
+      "ngx-request-header-authorization", "ngx-request-header-keep-alive",
+#if (NGX_HTTP_X_FORWARDED_FOR)
+      "ngx-request-header-x-forwarded-for",
+#endif
+#if (NGX_HTTP_REALIP)
+      "ngx-request-header-x-real-ip",
+#endif
+#if (NGX_HTTP_HEADERS)
+      "ngx-request-header-accept", "ngx-request-header-accept-language",
+#endif
+#if (NGX_HTTP_DAV)
+      "ngx-request-header-depth", "ngx-request-header-destination",
+      "ngx-request-header-overwrite", "ngx-request-header-date",
+#endif
+      "ngx-request-header-cookie", "ngx-request-user", "ngx-request-passwd",
+      NULL);
+
   // load the script
   scm_primitive_load (scm_from_locale_stringn ((char *)script_filename->data,
                                                script_filename->len));
-
-  return NULL;
 }
 
 static ngx_int_t
